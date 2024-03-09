@@ -10,6 +10,7 @@ params = {
     "n":  30,
     "m":  1,
     "pa": 20,
+    "cl": 1.67,
     "ha": 15,
     "t": 10,
     "pc": False
@@ -28,7 +29,10 @@ def RunCommand(is_interactive):
                    number=params["m"])
 
     pa = rs.GetReal(message="Pressure angle",
-                    number=params["pa"], minimum=0, maximum=45)
+                    number=params["pa"], minimum=0, maximum=45)    
+    
+    cl = rs.GetReal(message="Tooth Clearance",
+                    number=params["cl"], minimum=1.0, maximum=2.0)
 
     ha = rs.GetReal(message="Helix angle",
                     number=params["ha"], minimum=-45, maximum=45)
@@ -40,7 +44,7 @@ def RunCommand(is_interactive):
                               items=(("PitchCylinder", "No", "Yes"),),
                               defaults=(params["pc"],))
 
-    if None in [center, n, m, pa, ha, t, bool_opts]:
+    if None in [center, n, m, pa, cl, ha, t, bool_opts]:
         return 1  # Cancel
 
     pc = bool_opts[0]
@@ -48,6 +52,7 @@ def RunCommand(is_interactive):
     params["n"] = n
     params["m"] = m
     params["pa"] = pa
+    params["cl"] = cl
     params["ha"] = ha
     params["t"] = t
     params["pc"] = pc
@@ -61,7 +66,8 @@ def RunCommand(is_interactive):
 
     gear = generate_gear_crv(teeth=params["n"],
                              module=params["m"],
-                             pressure_angle=params["pa"])
+                             pressure_angle=params["pa"],
+                             clearance=params["cl"])
 
     pitch = abs((n * m * pi) / tan(radians(ha)))
     turns = t / pitch
